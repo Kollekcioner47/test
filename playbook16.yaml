@@ -1,0 +1,26 @@
+---
+- name: delegate plybook
+  hosts: my_linux
+  become: yes
+
+  vars:
+    message: "Hello, World!"
+  
+  tasks:
+  - ping:
+
+  - name: create first file
+    copy:
+      dest: "/home/engineer/test.txt"
+      content: |
+        This is fileN1
+        on {{message}}
+    delegate_to: client1
+
+  - name: create second file
+    copy:
+      dest: "/home/engineer/test.txt"
+      content: |
+        This is fileN2
+        on {{message}}
+    delegate_to: client2

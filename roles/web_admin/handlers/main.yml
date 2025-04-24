@@ -1,0 +1,11 @@
+---
+# handlers file for web_admin
+- name: Restart Apache for Debian
+  service:
+    name: apache2
+    state: restarted
+
+- name: Restart Apache for Red
+  service:
+    name: httpd
+    state: restarted

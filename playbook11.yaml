@@ -1,0 +1,39 @@
+---
+- name: run and validate bash script
+  hosts: my_linux
+  become: yes
+
+  vars:
+    script_path: /usr/local/bin/check_disk.sh
+    threshold_percent: 90
+  
+  tasks:
+  - name: Deploy script
+    copy:
+      dest: "{{script_path}}"
+      mode: 0755
+      content: |
+        #!/bin/bash
+        used=$(df / | awk 'NR==2 {gsub("%",""); print $5}')
+        if [ "$used" -ge {{threshold_percent}} ]; then
+          echo "ALERT: Root fs usage is ${used}% over {{threshold_percent}}"
+          exit 1
+        else
+          echo "OK: Disk usage is ${used}%"
+          exit 0
+        fi
+
+  - name: execute script
+    command: "{{script_path}}"
+    register: disk_check
+    ignore_errors: yes
+
+  - name: print result
+    debug: msg={{disk_check.stdout_lines}}
+  
+  - name: log alert
+    lineinfile:
+      path: /var/log/ansible_disk_alert.log
+      create: yes
+      line: "{{ansible_date_time.iso8601}} - ALERT: Disk usage over threshold on {{inventory_hostname}} "
+    when: disk_check.rc != 0

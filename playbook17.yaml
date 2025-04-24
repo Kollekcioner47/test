@@ -1,0 +1,19 @@
+---
+- name: try catch
+  hosts: client1
+  become: yes
+  
+
+  tasks:
+  - name: task1
+    apt: name=mmmmmmmc
+    ignore_errors: yes
+
+  - name: task2
+    shell: echo 'Hello World!'
+    register: result
+    #failed_when: result.rc == 0
+    failed_when: "'World' in result.stdout"
+
+  - debug:
+      var: result

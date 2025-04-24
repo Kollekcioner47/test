@@ -1,0 +1,10 @@
+---
+- name: Cron task
+  hosts: client1
+  become: yes
+
+  tasks:
+  - lineinfile:
+      path: "/home/engineer/cron.txt"
+      create: yes
+      line: "test cron {{ansible_date_time.iso8601}}"

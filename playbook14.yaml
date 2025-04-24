@@ -1,0 +1,7 @@
+---
+- name: install Apache
+  hosts: "{{MYHOSTS}}"
+  become: yes
+
+  roles:
+    - { role: web_admin, when: ansible_system == "Linux" }

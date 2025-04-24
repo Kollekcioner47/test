@@ -1,0 +1,12 @@
+---
+- name: Clean env nginx
+  hosts: my_deb
+  become: yes
+
+  tasks:
+
+  - name: remove nginx 
+    apt: name=nginx state=absent
+  
+  - name: clean folder
+    shell: cmd="rm -rf /var/www/html/*"

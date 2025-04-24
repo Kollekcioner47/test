@@ -1,0 +1,14 @@
+server {
+    listen {{listen_port}};
+    server_name {{server_name}};
+
+    root {{root_path}};
+    index index.html index.htm;
+
+    location / {
+        try_files $uri $uri/ =404;
+        }
+    
+    access_log /var/log/nginx/{{server_name}}.access.log;
+    error_log /var/log/nginx/{{server_name}}.error.log;
+}

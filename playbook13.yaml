@@ -1,0 +1,46 @@
+---
+- name: Setup Nginx with custom config
+  hosts: my_deb
+  become: yes
+
+  vars:
+    server_name: ansible.ru
+    listen_port: 80
+    root_path: /var/www/html
+    site_title: "Welcome to {{server_name}}"
+  
+  tasks:
+  - name: install Nginx
+    apt: name=nginx state=present update_cache=yes
+
+  - name: create web-site directory
+    file:
+      path: "{{root_path}}"
+      state: directory
+      owner: www-data
+      group: www-data
+      mode: 0755
+
+
+  - name: Generate index
+    template:
+      src: nginx/index.html.j2
+      dest: "{{root_path}}/index.html"
+      mode: 0644
+
+
+  - name: deploy custom config
+    template:
+      src: nginx/default.conf.j2
+      dest: /etc/nginx/sites-available/default
+      owner: root
+      group: root
+      mode: 0644
+    notify: restart nginx
+
+  - name: config service
+    service: name=nginx state=started enabled=yes
+
+  handlers:
+    - name: restart nginx
+      service: name=nginx state=restarted
