@@ -19,7 +19,7 @@
   - name: add new line to tmp sudoers
     lineinfile:
       path: "{{ sudoers_tmp }}"
-      line: "devops ALL=(ALL:ALL) NOPASSWD: ALL"
+      line: "engineer ALL=(ALL:ALL) NOPASSWD: ALL"
       state: present
   
   - name: validate tmp sudoers

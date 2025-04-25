@@ -1,6 +1,6 @@
 ---
 - name: Install and Configure PostgreSQL
-  hosts: client1
+  hosts: my_deb
   become: yes
 
   vars:

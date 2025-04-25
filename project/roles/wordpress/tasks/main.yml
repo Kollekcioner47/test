@@ -1,0 +1,60 @@
+---
+# tasks file for wordpress
+- name: install php and wp
+  apt:
+    name:
+     - php
+     - php-fpm
+     - php-pgsql
+     - php-mbstring
+     - php-xml
+     - php-gd
+     - unzip
+    state: present
+    update_cache: yes
+
+- name: Gather package facts
+  package_facts:
+    manager: auto
+
+- name: Extract clean PHP version
+  set_fact:
+    php_version_clean: "{{ ansible_facts.packages['php'][0]['version'] | regex_replace('^(.*:)?([0-9]+\\.[0-9]+).*$', '\\2') }}"
+  when: "'php' in ansible_facts.packages"
+
+- name: config php
+  service:
+    name: "php{{ php_version_short | default('8.2') }}-fpm"
+    state: started
+    enabled: yes
+
+- name: create root
+  file:
+    path: "{{wp_root}}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: 0755
+
+- name: download and unzip wordpress
+  unarchive:
+    src: https://wordpress.org/latest.tar.gz
+    dest: /tmp
+    remote_src: yes
+
+- name: copy wp to root
+  copy:
+    src: /tmp/wordpress/
+    dest: "{{wp_root}}"
+    remote_src: yes
+    owner: www-data
+    group: www-data
+    mode: 0755
+
+- name: configure wp-config.php
+  template:
+    src: wp-config.php.j2
+    dest: "{{wp_root}}"
+    owner: www-data
+    group: www-data
+    mode: 0644
