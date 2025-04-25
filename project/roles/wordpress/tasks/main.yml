@@ -13,6 +13,19 @@
     state: present
     update_cache: yes
 
+- name: Download PostgreSQL for WordPress plugin
+  get_url:
+    url: https://github.com/PostgreSQL-For-Wordpress/postgresql-for-wordpress/archive/refs/tags/v3.3.1.zip
+    dest: /tmp/pg4wp.zip
+    mode: 0644
+
+- name: Extract PostgreSQL plugin
+  unarchive:
+    src: /tmp/pg4wp.zip
+    dest: "{{ wp_root }}/wp-content/plugins/"
+    remote_src: yes
+    creates: "{{ wp_root }}/wp-content/plugins/postgresql-for-wordpress"
+
 - name: Gather package facts
   package_facts:
     manager: auto
